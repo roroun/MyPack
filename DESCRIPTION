@@ -1,6 +1,6 @@
 Package: MyPack
 Type: Package
-Title: What the Package Does (Title Case)
+Title: My Personal Package
 Version: 0.1.0
 Author: Ralf Wu
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -9,3 +9,8 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    data.table,
+    dplyr,
+    rio
+RoxygenNote: 7.3.2
