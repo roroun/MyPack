@@ -14,21 +14,28 @@ rw.merge.sdtm =
     
     sdtm = data.table::as.data.table(sdtm)
     supp = data.table::as.data.table(supp)
+    idvar = unique(supp$IDVAR)
+    
+    if (! idvar %in% '') {
+      reshape.idvar = c('USUBJID', 'IDVARVAL')
+    } else reshape.idvar = c('USUBJID')
     
     supp.wide =
       supp[order(QNAM), 
            .(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
-      reshape(direction = 'wide', idvar = c('USUBJID', 'IDVARVAL'), timevar = 'QNAM',
-              v.names = 'QVAL',
-              varying = list(supp[order(QNAM), unique(QNAM)]))
+      stats::reshape(direction = 'wide', idvar = reshape.idvar, timevar = 'QNAM',
+                     v.names = 'QVAL',
+                     varying = list(supp[order(QNAM), unique(QNAM)]))
     
-    names(supp.wide)[2] = unique(supp$IDVAR) 
+    if (! idvar %in% '') {
+      names(supp.wide)[2] = unique(supp$IDVAR) 
+    } 
     
     out =
       merge(
         sdtm,
         supp.wide,
-        by = names(supp.wide)[1:2],
+        by = names(supp.wide)[1:length(reshape.idvar)],
         all.x = T
       )
     
