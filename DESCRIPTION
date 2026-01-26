@@ -11,6 +11,5 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     data.table,
-    dplyr,
-    rio
+    dplyr
 RoxygenNote: 7.3.2

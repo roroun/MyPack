@@ -10,13 +10,14 @@
 
 rw.merge.sdtm =
   function(sdtm, supp){
+    USUBJID = IDVARVAL = QNAM = QVAL = NULL
     
     sdtm = data.table::as.data.table(sdtm)
     supp = data.table::as.data.table(supp)
     
     supp.wide =
-      supp[, .(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
-      dplyr::arrange(QNAM) %>% 
+      supp[order(QNAM), 
+           .(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
       reshape(direction = 'wide', idvar = c('USUBJID', 'IDVARVAL'), timevar = 'QNAM',
               v.names = 'QVAL',
               varying = list(supp[order(QNAM), unique(QNAM)]))
