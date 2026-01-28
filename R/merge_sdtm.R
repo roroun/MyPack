@@ -12,7 +12,7 @@ rw.merge.sdtm =
   function(sdtm, supp){
     # Address check note: undefined global functions or variables
     USUBJID = IDVARVAL = QNAM = QVAL = NULL   # No visible binding for global variable
-    `.` = list()
+    '.' = list()
 
     sdtm = data.table::as.data.table(sdtm)
     supp = data.table::as.data.table(supp)
