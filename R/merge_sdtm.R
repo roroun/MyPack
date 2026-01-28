@@ -5,12 +5,17 @@
 #' @param supp A SDTM SUPP domain
 #'
 #' @return A merged data.table with all variables from the main domain as well as the variables from all QNAM values 
+#' 
+#' @importFrom dplyr "%>%"
+#' 
 #' @export
 #'
 
 rw.merge.sdtm =
   function(sdtm, supp){
-    USUBJID = IDVARVAL = QNAM = QVAL = NULL
+    # Address check note: undefined global functions or variables
+    USUBJID = IDVARVAL = QNAM = QVAL = NULL   # No visible binding for global variable
+    `.` = list()   # caused by data.table
     
     sdtm = data.table::as.data.table(sdtm)
     supp = data.table::as.data.table(supp)
