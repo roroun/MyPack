@@ -5,11 +5,8 @@
 #' @param supp A SDTM SUPP domain
 #'
 #' @return A merged data.table with all variables from the main domain as well as the variables from all QNAM values 
-#' 
-#' @importFrom dplyr "%>%"
-#' 
+#'  
 #' @export
-#'
 
 rw.merge.sdtm =
   function(sdtm, supp){
