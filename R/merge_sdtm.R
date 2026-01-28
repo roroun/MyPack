@@ -23,7 +23,7 @@ rw.merge.sdtm =
     
     supp.wide =
       supp[order(QNAM), 
-           list(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
+           .(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
       stats::reshape(direction = 'wide', idvar = reshape.idvar, timevar = 'QNAM',
                      v.names = 'QVAL',
                      varying = list(supp[order(QNAM), unique(QNAM)]))
