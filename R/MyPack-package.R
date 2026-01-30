@@ -11,5 +11,10 @@
 #' @importFrom data.table .SD
 #' @importFrom data.table :=
 #' @importFrom data.table data.table
+#' @importFrom DescTools Format
+#' @importFrom dplyr recode
+#' @importFrom stats quantile
+#' @importFrom stats reshape
+#' @importFrom stats sd
 ## usethis namespace: end
 NULL

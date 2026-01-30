@@ -12,7 +12,7 @@ rw.merge.sdtm =
   function(sdtm, supp){
     # Address check note: undefined global functions or variables
     USUBJID = IDVARVAL = QNAM = QVAL = NULL   # No visible binding for global variable
-
+    
     sdtm = data.table::as.data.table(sdtm)
     supp = data.table::as.data.table(supp)
     idvar = unique(supp$IDVAR)
@@ -24,9 +24,9 @@ rw.merge.sdtm =
     supp.wide =
       supp[order(QNAM), 
            .(USUBJID, IDVARVAL = as.numeric(IDVARVAL), QNAM, QVAL)]  %>% 
-      stats::reshape(direction = 'wide', idvar = reshape.idvar, timevar = 'QNAM',
-                     v.names = 'QVAL',
-                     varying = list(supp[order(QNAM), unique(QNAM)]))
+      reshape(direction = 'wide', idvar = reshape.idvar, timevar = 'QNAM',
+              v.names = 'QVAL',
+              varying = list(supp[order(QNAM), unique(QNAM)]))
     
     if (! idvar %in% '') {
       names(supp.wide)[2] = unique(supp$IDVAR) 

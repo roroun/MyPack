@@ -1,52 +1,55 @@
-#' Title: Descriptive Summary for Numeric Variables
+#' Descriptive Summary for Numeric Variables
 #'
 #' @param db A dataset, e.g., ADSL
 #' @param trt A treatment variable, e.g., 'TRTA'
 #' @param aval The numeric variable to be summarized, e.g., AVAL
 #' @param l1 Level 1, e.g., 'AVISIT'
 #' @param l2 Level 2, e.g., 'PARAMCD'
+#' @param stats Character. Which stats to produce. Either “common” (default), or a selection of : 
+#' 'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'.
 #' @param dp Decimal place to be displayed
 #' @param direction Display direction: long or wide
 #'
 #' @return A dataset with common stats, including n, mean, sd, min, max
 #' @export
-#'
-#' @examples
+
 
 # TEST DB ----
-dbin =
-  data.table(
-    paste0('P',
-           str_pad(1:100, width = 3, side = 'left', pad = '0')),
-    TRT = sample(c('TEST', 'CONTROL'), size = 100, replace = T),
-    AVAL = runif(100, min = 0, max = 100) %>% round(digits = 1),
-    L1 = sample(c('V1', 'V2'), size = 100, replace = T),
-    L2 = sample(c('PARAM1', 'PARAM2'), size = 100, replace = T)
-  )
+# dbin =
+#   data.table(
+#     paste0('P',
+#            str_pad(1:100, width = 3, side = 'left', pad = '0')),
+#     TRT = sample(c('TEST', 'CONTROL'), size = 100, replace = T),
+#     AVAL = runif(100, min = 0, max = 100) %>% round(digits = 1),
+#     L1 = sample(c('V1', 'V2'), size = 100, replace = T),
+#     L2 = sample(c('PARAM1', 'PARAM2'), size = 100, replace = T)
+#   )
+# 
+# db = dbin[TRT %in% 'TEST']
+# trt = 'TRT'
+# aval = 'AVAL'
+# l1 = 'L1'
+# l2 = 'L2'
 
-db = dbin[TRT %in% 'TEST']
-trt = 'TRT'
-aval = 'AVAL'
-l1 = 'L1'
-l2 = 'L2'
-
-
-t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'long1') {
+# FUNC
+rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 'long') {
+  . = ..out.var = lvl.trt = lvl.l1 = lvl.l2 = STATS = MEAN = SD = MIN = MAX = NULL   # No visible binding for global variable
   
-  # Check
+  # Check #
   stats = toupper(stats)
-  if (! stats %in% c('COMMON', 'N', 'MEAN', 'SD', 'MED', 'MIN', 'MAX', 'Q1', 'Q3', 'CV')) {
-    stop("'stats' must be 'common', 'n', 'mean', 'sd', 'med', 'min', 'max', 'q1', 'q3', 'cv'")
+  if (any(! stats %in% c('COMMON', 'N', 'MEAN', 'SD', 'MEAN_SD', 'MED', 'MIN', 'MAX', 'RANGE', 'Q1', 'Q3', 'CV')) ) {
+    stop("'stats' must be 'common', 'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'")
   } 
-  if (stats %in% 'COMMON') {
-    stats = c('N', 'MEAN', 'SD', 'MED', 'MIN', 'MAX')
-  } 
-  
-  if (! layout %in% c('long1', 'long2', 'wide')) {
-    stop("'layout' must be 'long1', 'long2', 'wide'")
+  if (any(stats %in% 'COMMON')) {
+    stats = append(stats, c('N', 'MEAN', 'SD', 'MED', 'MIN', 'MAX'), after = which(stats %in% 'COMMON'))
+    stats = stats[-which(stats %in% 'COMMON')]
   } 
   
-  # create l1/l2 if any is missing
+  if (! direction %in% c('long', 'wide')) {
+    stop("'direction' must be 'long', 'wide'")
+  } 
+  
+  # create l1/l2 if any is missing #
   arg.lvl = c('l1', 'l2')
   arg = names(as.list(match.call())[-1])
   arg.mis = arg.lvl[! arg.lvl %in% arg]
@@ -57,7 +60,7 @@ t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'lon
     assign(i, paste0(toupper(i), '_RW'))
   }
   
-  # define variable levels
+  # define variable levels #
   for (i in c('trt', 'l1', 'l2')) {
     lvl.var = paste0('lvl.', i)
     
@@ -70,7 +73,7 @@ t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'lon
     }
   }
   
-  # Calculate stats
+  # Calculate stats #
   out =
     db[! is.na(aval),
        .(N = .N %>% as.character(),
@@ -101,17 +104,19 @@ t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'lon
   out[, `:=`(
     trt = factor(trt, levels = lvl.trt),
     l1 = factor(l1, levels = lvl.l1),
-    l2 = factor(l2, levels = lvl.l2)
+    l2 = factor(l2, levels = lvl.l2),
+    MEAN_SD = paste0(MEAN, ' (', SD, ')'),
+    RANGE = paste(MIN, MAX, sep = ', ')
   ),
   env = list(trt = trt, l1 = l1, l2 = l2)]
   
-  # Add missing trt groups
+  # Add missing trt groups #
   trt.mis =
     lvl.trt[! lvl.trt %in% out[, unique(trt), env = list(trt = trt)]]
   
   if (length(trt.mis) > 0) {
     out =
-      rbindlist(
+      data.table::rbindlist(
         list(
           out,
           out[, .(trt = trt.mis, N = '0'), by = .(l1, l2), 
@@ -121,11 +126,18 @@ t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'lon
       )
   }
   
-  # Display: Wide format
-  arg.lvl1 = arg.lvl[! arg.lvl %in% arg.mis] %>% sort(decreasing = T)
+  out =
+    out[, lapply(.SD, FUN = function(x) {
+      if (is.character(x)) {
+        dplyr::recode(x, .missing = '')
+      } else x 
+    })]
   
-  if (length(arg.lvl1) > 0) {
-    out.var = c(unlist(mget(arg.lvl1), use.names = F), trt, stats)
+  # Display: Wide format #
+  arg.lvl.in = arg.lvl[! arg.lvl %in% arg.mis] %>% sort(decreasing = T)
+  
+  if (length(arg.lvl.in) > 0) {
+    out.var = c(unlist(mget(arg.lvl.in), use.names = F), trt, stats)
   } else out.var = c(trt, stats)
   
   out.wide = 
@@ -133,51 +145,35 @@ t.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, layout = 'lon
         ..out.var,
         env = list(l2 = l2, l1 = l1, trt = trt)]
   
+  # Display: long format #
+  var.lvl = mget(arg.lvl.in) %>% unlist(use.names = F)
   
-  ### HERE
+  if (length(arg.lvl.in) > 0) {
+    out.long =
+      out.wide[order(trt),
+               env = list(trt = trt)]  %>%
+      reshape(direction = 'long', idvar = c(var.lvl, trt), timevar = 'STATS', times = stats,
+              v.names = 'RESULT',
+              varying = stats) %>%
+      reshape(direction = 'wide', idvar = c(var.lvl, 'STATS'), timevar = trt,
+              v.names = 'RESULT',
+              varying = list(lvl.trt))
+  } else {
+    out.long =
+      data.table::transpose(out.wide, make.names = trt, keep.names = 'STATS')
+  }
   
-  
-  
-  
-  
-  # Display: long1 format
-  idvar = c(get(arg.lvl[! arg.lvl %in% arg.mis]), trt)
-  idvar = get(arg.lvl[! arg.lvl %in% arg.mis])
-  
-  out.long1 =
-    out.wide[order(trt),
-             env = list(trt = trt)]  %>%
-    reshape(direction = 'long', idvar = idvar, timevar = 'SEQ',
-            v.names = 'RESULT',
-            varying = stats) %>%
-    reshape(direction = 'wide', idvar = c(idvar[-length(idvar)], 'SEQ'), timevar = trt,
-            v.names = 'RESULT',
-            varying = list(lvl.trt))
-  
-  idvar1 = c(idvar[-length(idvar)], 'SEQ')
-
-  out.long1 =
-    out.long1[order(mget(idvar1))]
-  
-  
-  
-  
-  out2.long[, `:=`(
-    SEQ = recode(SEQ, `1` = '_n', `2` ='MEAN', `3` = 'SD', `4` = 'MED', `5` = 'MIN', `6` = 'MAX')
+  out.long[, `:=`(
+    STATS = factor(STATS, levels = stats)
   )]
-
-  out2.long[, `:=`(
-    SEQ = factor(SEQ, levels = c('_n', 'MEAN', 'SD', 'MED', 'MIN', 'MAX'))
-  )]
-
   
-  if (layout %in% 'long1') return(out2.long) 
-  if (layout %in% 'long2') return(out2.long)
-  if (layout %in% 'wide') return(out.wide)
-
+  expr = paste0('order(',  paste(var.lvl, collapse = ', '), ', STATS)') %>% parse(text = .)
+  
+  out.long = 
+    out.long[eval(expr)]
+  
+  # Output #
+  if (direction %in% 'long') return(out.long) 
+  if (direction %in% 'wide') return(out.wide)
 }
-
-t.desc(db = db, aval = 'AVAL', l1 = 'L1', l2 = 'l2') %>% View()
-
-
 
