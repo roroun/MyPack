@@ -33,7 +33,7 @@
 
 # FUNC
 rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 'long') {
-  . = ..out.var = lvl.trt = lvl.l1 = lvl.l2 = STATS = MEAN = SD = MIN = MAX = NULL   # No visible binding for global variable
+  . = lvl.trt = lvl.l1 = lvl.l2 = STATS = MEAN = SD = MIN = MAX = NULL   # No visible binding for global variable
   
   # Check #
   stats = toupper(stats)
