@@ -16,5 +16,6 @@
 #' @importFrom stats quantile
 #' @importFrom stats reshape
 #' @importFrom stats sd
+#' @importFrom stringr str_trim
 ## usethis namespace: end
 NULL

@@ -13,5 +13,6 @@ Imports:
     data.table,
     dplyr,
     magrittr,
+    stringr,
     DescTools
 RoxygenNote: 7.3.2
