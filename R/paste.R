@@ -19,7 +19,7 @@
 #     VAR3 = sample(c('#', '$', '*', '', NA), 10, replace = T)
 #   )
 
-# Func
+# Func ----
 rw.paste = function(.SD, collapse = ' ') {
   apply(.SD, MARGIN = 1, FUN = function(x) {
     y = stringr::str_trim(x, side = 'left')

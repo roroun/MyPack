@@ -31,11 +31,11 @@
 # l1 = 'L1'
 # l2 = 'L2'
 
-# FUNC
+# FUNC ----
 rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 'long') {
   . = lvl.trt = lvl.l1 = lvl.l2 = STATS = MEAN = SD = MIN = MAX = NULL   # No visible binding for global variable
   
-  # Check #
+  # Check arguments #
   stats = toupper(stats)
   if (any(! stats %in% c('COMMON', 'N', 'MEAN', 'SD', 'MEAN_SD', 'MED', 'MIN', 'MAX', 'RANGE', 'Q1', 'Q3', 'CV')) ) {
     stop("'stats' must be 'common', 'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'")
