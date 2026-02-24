@@ -38,7 +38,7 @@ rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 
   # Check arguments #
   stats = toupper(stats)
   if (any(! stats %in% c('COMMON', 'N', 'MEAN', 'SD', 'MEAN_SD', 'MED', 'MIN', 'MAX', 'RANGE', 'Q1', 'Q3', 'CV')) ) {
-    stop("'stats' must be 'common', 'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'")
+    stop("'stats' must be 'common', 'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'.")
   } 
   if (any(stats %in% 'COMMON')) {
     stats = append(stats, c('N', 'MEAN', 'SD', 'MED', 'MIN', 'MAX'), after = which(stats %in% 'COMMON'))
@@ -49,13 +49,14 @@ rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 
     stop("'direction' must be 'long', 'wide'")
   } 
   
-  # create l1/l2 if any is missing #
+  # create l1/l2 if any of them is missing #
   arg.lvl = c('l1', 'l2')
   arg = names(as.list(match.call())[-1])
   arg.mis = arg.lvl[! arg.lvl %in% arg]
+  arg.lvl.in = arg.lvl[! arg.lvl %in% arg.mis] %>% sort(decreasing = T)
   
   for (i in arg.mis) {
-    db[, paste0(toupper(i), '_RW') := 'ALL']
+    db[, paste0(toupper(i), '_RW') := '_ALL']
     
     assign(i, paste0(toupper(i), '_RW'))
   }
@@ -134,8 +135,6 @@ rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 
     })]
   
   # Display: Wide format #
-  arg.lvl.in = arg.lvl[! arg.lvl %in% arg.mis] %>% sort(decreasing = T)
-  
   if (length(arg.lvl.in) > 0) {
     out.var = c(unlist(mget(arg.lvl.in), use.names = F), trt, stats)
   } else out.var = c(trt, stats)
