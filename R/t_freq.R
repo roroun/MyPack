@@ -1,31 +1,24 @@
-# SETTING ----
-list.packages = 
-  c('data.table', 'DescTools', 'dplyr', 'stringr')
-
-invisible(lapply(list.packages, library, character.only = TRUE))
-
-
 # TEST DB ----
-dbin =
-  data.table(
-    TRT = sample(c('TEST1', 'TEST2', 'CONTROL'), size = 100, replace = T),
-    VAR1 = sample(c('L1_1', 'L1_2', 'L1_3'), size = 100, replace = T),
-    VAR2 = sample(c('L2_1', 'L2_2'), size = 100, replace = T),
-    VAR3 = sample(c('L3_1', 'L3_2'), size = 100, replace = T)
-  )
-
-db = copy(dbin) %>% filter(TRT %in% c('TEST1', 'CONTROL'))
-trt = 'TRT'
-l1 = 'VAR1'
-l2 = 'VAR2'
-N = 'n'
-N = c('CONTROL' = 100, 'TEST1' = 100, 'TEST2' = 100)
-stats = c('n')
-ci = F
-ci.method = 'clopper-pearson'
-conf.level = 0.95
-diffci.method = 'scorecc'
-diff.reff = 'CONTROL'
+# dbin =
+#   data.table(
+#     TRT = sample(c('TEST1', 'TEST2', 'CONTROL'), size = 100, replace = T),
+#     VAR1 = sample(c('L1_1', 'L1_2', 'L1_3'), size = 100, replace = T),
+#     VAR2 = sample(c('L2_1', 'L2_2'), size = 100, replace = T),
+#     VAR3 = sample(c('L3_1', 'L3_2'), size = 100, replace = T)
+#   )
+# 
+# db = copy(dbin) %>% filter(TRT %in% c('TEST1', 'CONTROL'))
+# trt = 'TRT'
+# l1 = 'VAR1'
+# l2 = 'VAR2'
+# N = 'n'
+# N = c('CONTROL' = 100, 'TEST1' = 100, 'TEST2' = 100)
+# stats = c('n')
+# ci = F
+# ci.method = 'clopper-pearson'
+# conf.level = 0.95
+# diffci.method = 'scorecc'
+# diff.reff = 'CONTROL'
 
 # FUNC  ----
 #' Frequency Summary for Categorical Variables
@@ -51,6 +44,9 @@ diff.reff = 'CONTROL'
 rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
                    ci.method = 'clopper-pearson', conf.level = 0.95,
                    diffci.method, diff.reff) {
+  . = TRT = lvl.trt = lvl.l1 = lvl.l2 = lvl.l3 = i1 = STATS = N_N = PCT = CI.LL = CI.UL = NULL   # No visible binding for global variable
+  
+  db = copy(db)
   
   # Check arguments #
   if ( 
@@ -58,9 +54,11 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   ) stop("N must be 'n', a named vector, or a table.")
   
   stats = toupper(stats)
-  if (any(! stats %in% c('N', 'N_N', 'N_PCT', 'PCT', 'CI', 'DIFF', 'DIFFCI'))) {
+  if (any(! stats %in% c('N', 'N_N', 'N_PCT', 'PCT', 'CI', 'DIFF', 'DIFFCI'))) 
     stop("'stats' must be 'n', 'n_n', 'n_pct', 'pct', 'ci', 'diff', 'diffci'.")
-  } 
+  
+  if (any(stats %in% c('DIFF', 'DIFFCI')) & any(missing(diffci.method), missing(diff.reff)))
+    stop("Both 'diffci.method' and 'diff.reff' must be specified as 'stats' include 'diff' or 'diffci'.")
   
   # create l2/l3 if any of them is missing #
   arg.lvl = c('l1', 'l2', 'l3')
@@ -91,7 +89,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   out1 =
     db[, table(l3, l2, l1, trt),
        env = list(l3 = l3, l2 = l2, l1 = l1, trt = trt)] %>%
-    addmargins(margin = c(3, 4), FUN = list(`_n` = sum, OVERALL = sum)) %>%
+    stats::addmargins(margin = c(3, 4), FUN = list(`_n` = sum, OVERALL = sum)) %>%
     data.table::as.data.table()
   
   # Add PCT and CL
@@ -133,15 +131,15 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
        env = list(l3 = l3, l2 = l2, l1 = l1, trt = trt)]
   
   out1[, `:=`(
-    N_N = fcase(l1 %in% '_n', '', default = N_N),
-    PCT = fcase(l1 %in% '_n', '', default = PCT),
-    N_PCT = fcase(
+    N_N = data.table::fcase(l1 %in% '_n', '', default = N_N),
+    PCT = data.table::fcase(l1 %in% '_n', '', default = PCT),
+    N_PCT = data.table::fcase(
       l1 %in% '_n', as.character(N),
       N > 0, paste0(N, ' (', PCT, ')'),
       default = '0'
     ),
     CI =
-      fcase(
+      data.table::fcase(
         l1 %in% '_n', '',
         default = paste0(CI.LL, ', ', CI.UL)
       )
@@ -203,7 +201,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
       
       temp1 =
         db.diff[! l1 %in% '_n', 
-                ..var.temp,
+                var.temp, with = F,
                 env = list(l1 = l1)] 
       
       temp1[, `:=`(
@@ -216,7 +214,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
     }
     
     out2 =
-      rbindlist(
+      data.table::rbindlist(
         list(
           out2,
           db.diff1
@@ -238,11 +236,11 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   
   out3 =
     out2[l1 %in% '_n' & STATS %in% 'N' | (! l1 %in% '_n' & STATS %in% stats), 
-         ..out.var,
+         out.var, with = F,
          env = list(l1 = l1)]
   
   out3[, `:=`(
-    STATS = factor(STATS, levels = c('N', stats))
+    STATS = factor(STATS, levels = unique(c('N', stats)))
   )]
   
   expr = paste0('order(',  paste(var.lvl, collapse = ', '), ', STATS)') %>% parse(text = .)
@@ -251,46 +249,4 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
     out3[eval(expr)]
   
   return(out.final)
-  
-  # 
-  # out =
-  #   out2[order(l2, l1, SEQ),
-  #        env = list(l2 = l2, l1 = l1)
-  #   ][! (l1 %in% '_n' & SEQ %in% 3),
-  #     env = list(l1 = l1)]
-  # 
-  # if (is.null(N) & isFALSE(ci) & missing(diffci.method) ) {
-  #   return(
-  #     out[SEQ %in% 1,
-  #         ..out.var]
-  #   ) } else if (! is.null(N) & isFALSE(ci) & missing(diffci.method)) {
-  #     return(
-  #       out[SEQ %in% 2,
-  #           ..out.var]
-  #     )
-  #   } else if (isTRUE(ci) & missing(diffci.method)) {
-  #     return(
-  #       out[SEQ %in% c(2, 3), 
-  #           ..out.var]
-  #     )
-  #   } else if (isFALSE(ci) & ! missing(diffci.method)) {
-  #     return(
-  #       out[SEQ %in% c(2, 4, 5), 
-  #           ..out.var]
-  #     )  
-  #   } else if (isTRUE(ci) & ! missing(diffci.method)) {
-  #     return(
-  #       out[SEQ %in% c(2, 3, 4, 5), 
-  #           ..out.var]
-  #     )
-  #   }
-  # 
 }
-
-# HERE: UNDER TESTING #
-rw.freq(db = dbin, trt = 'TRT', l1 = 'VAR1', stats = c('N_N', 'PCT', 'DIFF'), diffci.method = 'score', diff.reff = 'CONTROL') %>% 
-  View()
-
-
-
-
