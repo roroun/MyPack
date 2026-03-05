@@ -15,7 +15,7 @@ rw.freq(
   ci.method = "clopper-pearson",
   conf.level = 0.95,
   diffci.method,
-  diff.reff
+  diff.ref
 )
 }
 \arguments{
@@ -42,7 +42,7 @@ a table or named vector to specify the n for each group, e.g., c('Group A' = 100
 \item{diffci.method}{# A character string, specifying the method for CI of diff from BinomDiffCI;
 e.g., 'wald' for traditional Wald; 'score' for Newcombe; 'scorecc' for Newcombe with continuity correction}
 
-\item{diff.reff}{A character string, specify the trt group to be the reference for comparison}
+\item{diff.ref}{A character string, specify the trt group to be the reference for comparison}
 }
 \value{
 A dataset with frequency counts, CI, diff, and/or CI of diff

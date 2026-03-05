@@ -18,7 +18,7 @@
 # ci.method = 'clopper-pearson'
 # conf.level = 0.95
 # diffci.method = 'scorecc'
-# diff.reff = 'CONTROL'
+# diff.ref = 'CONTROL'
 
 # FUNC  ----
 #' Frequency Summary for Categorical Variables
@@ -36,17 +36,17 @@
 #' @param conf.level The confidence level, defaults to 0.95
 #' @param diffci.method # A character string, specifying the method for CI of diff from BinomDiffCI;
 #' e.g., 'wald' for traditional Wald; 'score' for Newcombe; 'scorecc' for Newcombe with continuity correction 
-#' @param diff.reff A character string, specify the trt group to be the reference for comparison
+#' @param diff.ref A character string, specify the trt group to be the reference for comparison
 #'
 #' @return A dataset with frequency counts, CI, diff, and/or CI of diff
 #' @export
 
 rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
                    ci.method = 'clopper-pearson', conf.level = 0.95,
-                   diffci.method, diff.reff) {
+                   diffci.method, diff.ref) {
   . = TRT = lvl.trt = lvl.l1 = lvl.l2 = lvl.l3 = i1 = STATS = N_N = PCT = CI.LL = CI.UL = NULL   # No visible binding for global variable
   
-  db = copy(db)
+  db = data.table::copy(db)
   
   # Check arguments #
   if ( 
@@ -57,8 +57,8 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   if (any(! stats %in% c('N', 'N_N', 'N_PCT', 'PCT', 'CI', 'DIFF', 'DIFFCI'))) 
     stop("'stats' must be 'n', 'n_n', 'n_pct', 'pct', 'ci', 'diff', 'diffci'.")
   
-  if (any(stats %in% c('DIFF', 'DIFFCI')) & any(missing(diffci.method), missing(diff.reff)))
-    stop("Both 'diffci.method' and 'diff.reff' must be specified as 'stats' include 'diff' or 'diffci'.")
+  if (any(stats %in% c('DIFF', 'DIFFCI')) & any(missing(diffci.method), missing(diff.ref)))
+    stop("Both 'diffci.method' and 'diff.ref' must be specified as 'stats' include 'diff' or 'diffci'.")
   
   # create l2/l3 if any of them is missing #
   arg.lvl = c('l1', 'l2', 'l3')
@@ -169,30 +169,30 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
         (lvl.trt) := lapply(.SD, as.numeric),
         .SDcols = lvl.trt]
     
-    lvl.trt1 = lvl.trt[! lvl.trt %in% diff.reff]
+    lvl.trt1 = lvl.trt[! lvl.trt %in% diff.ref]
     for (i in lvl.trt1) {
       db.diff[, paste0(i1, '_DIFF') := 
                 (DescTools::BinomDiffCI(x1 = i, n1 = i[l1 %in% '_n'], 
-                                        x2 = diff.reff, n2 = diff.reff[l1 %in% '_n'],
+                                        x2 = diff.ref, n2 = diff.ref[l1 %in% '_n'],
                                         conf.level = conf.level)[, 'est'] * 100) %>% 
                 DescTools::Format(digits = 1) %>% as.character(), 
               by = .(l3, l2),
-              env = list(l3 = l3, l2 = l2, l1 = l1, i = i, i1 = I(i), diff.reff = diff.reff)]
+              env = list(l3 = l3, l2 = l2, l1 = l1, i = i, i1 = I(i), diff.ref = diff.ref)]
       
       db.diff[, paste0(i1, '_DIFFCI') := 
                 paste0(
                   (DescTools::BinomDiffCI(x1 = i, n1 = i[l1 %in% '_n'], 
-                                          x2 = diff.reff, n2 = diff.reff[l1 %in% '_n'],
+                                          x2 = diff.ref, n2 = diff.ref[l1 %in% '_n'],
                                           conf.level = conf.level)[, 'lwr.ci'] * 100) %>% 
                     DescTools::Format(digits = 2) %>% as.character(),
                   ', ',
                   (DescTools::BinomDiffCI(x1 = i, n1 = i[l1 %in% '_n'], 
-                                          x2 = diff.reff, n2 = diff.reff[l1 %in% '_n'],
+                                          x2 = diff.ref, n2 = diff.ref[l1 %in% '_n'],
                                           conf.level = conf.level)[, 'upr.ci'] * 100) %>% 
                     DescTools::Format(digits = 2) %>% as.character()
                 ), 
               by = .(l3, l2),
-              env = list(l3 = l3, l2 = l2, l1 = l1, i = i, i1 = I(i), diff.reff = diff.reff)]
+              env = list(l3 = l3, l2 = l2, l1 = l1, i = i, i1 = I(i), diff.ref = diff.ref)]
     }
     
     db.diff1 = data.table(NULL)
@@ -208,7 +208,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
         STATS = i
       )]
       
-      names(temp1)[4:5] = lvl.trt1
+      names(temp1)[4:(4+length(lvl.trt1)-1)] = lvl.trt1
       
       db.diff1 = rbind(db.diff1, temp1)
     }
