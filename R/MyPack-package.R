@@ -16,12 +16,15 @@
 #' @importFrom data.table rbindlist
 #' @importFrom data.table fcase
 #' @importFrom data.table nafill
+#' @importFrom data.table tstrsplit
+#' @importFrom data.table CJ
 #' @importFrom DescTools Format
 #' @importFrom DescTools BinomCI
 #' @importFrom dplyr recode
 #' @importFrom stats quantile
 #' @importFrom stats reshape
 #' @importFrom stats sd
+#' @importFrom stats addmargins
 #' @importFrom stringr str_trim
 ## usethis namespace: end
 NULL

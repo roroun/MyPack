@@ -46,7 +46,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
                    diffci.method, diff.ref) {
   . = TRT = lvl.trt = lvl.l1 = lvl.l2 = lvl.l3 = i1 = STATS = N_N = PCT = CI.LL = CI.UL = NULL   # No visible binding for global variable
   
-  db = data.table::copy(db)
+  db = data.table::data.table(db)
   
   # Check arguments #
   if ( 

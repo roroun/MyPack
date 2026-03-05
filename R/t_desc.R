@@ -34,7 +34,7 @@
 rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 'long') {
   . = lvl.trt = lvl.l1 = lvl.l2 = STATS = MEAN = SD = MIN = MAX = NULL   # No visible binding for global variable
   
-  db = data.table::copy(db)
+  db = data.table::data.table(db)
   
   # Check arguments #
   stats = toupper(stats)
