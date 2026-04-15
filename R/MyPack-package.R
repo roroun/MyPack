@@ -26,5 +26,15 @@
 #' @importFrom stats sd
 #' @importFrom stats addmargins
 #' @importFrom stringr str_trim
+#' @importFrom stringr str_detect
+#' @importFrom stringr str_subset
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_replace_all
+#' @importFrom pdftools pdf_text
+#' @importFrom grid grid.newpage
+#' @importFrom grid grid.text
+#' @importFrom gridExtra grid.table
+
 ## usethis namespace: end
 NULL
