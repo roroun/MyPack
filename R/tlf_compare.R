@@ -1,4 +1,4 @@
-# # TEST Output ----
+# TEST Output ----
 # env = 'VST'
 # path.new = 'C:/Users/ralf.wu/OneDrive - Veristat, LLC/Documents/myrepo/TestOutput'
 # path.old = paste(path.new, 'Previous', sep = '/')
@@ -16,7 +16,7 @@
 #' @export 
 
 
-rw.compare.tlf = 
+rw.tlf.compare = 
   function(env = 'VST', path.new, path.old, path.out) {
     
     . = VAL = TLF = NULL   # No visible binding for global variable
@@ -217,7 +217,7 @@ rw.compare.tlf =
 
 
 # TEST Run ----
-# compare.tlf(
+# rw.tlf.compare(
 #   env = 'VST',
 #   path.new = path.new,
 #   path.old = path.old,
