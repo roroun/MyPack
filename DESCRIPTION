@@ -18,5 +18,7 @@ Imports:
     lubridate,
     pdftools,
     grid,
-    gridExtra
+    gridExtra,
+    doconv,
+    htmlwidgets
 RoxygenNote: 7.3.2

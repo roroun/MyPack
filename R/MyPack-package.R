@@ -31,10 +31,13 @@
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
+#' @importFrom stringr str_ends
 #' @importFrom pdftools pdf_text
 #' @importFrom grid grid.newpage
 #' @importFrom grid grid.text
 #' @importFrom gridExtra grid.table
+#' @importFrom doconv docx2pdf
+#' @importFrom htmlwidgets createWidget
 
 ## usethis namespace: end
 NULL

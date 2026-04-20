@@ -1,15 +1,19 @@
-# SETTING ----
-list.packages = 
-  c('dplyr', 'stringr', 'pdftools', 'diffr', 'doconv')
-
-invisible(lapply(list.packages, library, character.only = TRUE))
-
-# TEST Output ----
-path.f1 = 'C:/Users/ralf.wu/OneDrive - Veristat, LLC/Documents/myrepo/TestOutput/rt-ae-teae.pdf'
-path.f2 = 'C:/Users/ralf.wu/OneDrive - Veristat, LLC/Documents/myrepo/TestOutput/Previous/rt-ae-teae.pdf'
-
+# TEST DB ----
+# path.f1 = 'C:/Users/ralf.wu/OneDrive - Veristat, LLC/Documents/myrepo/TestOutput/rt-dm-saf.rtf'
+# path.f2 = 'C:/Users/ralf.wu/OneDrive - Veristat, LLC/Documents/myrepo/TestOutput/Previous/rt-dm-saf.rtf'
 
 # FUNC ----
+#' Display difference between two files side by side
+#'
+#' @param path.f1 The full directory path of File 1
+#' @param path.f2 The full directory path of File 2
+#' @param before Text to display on File 1
+#' @param after Text to display on File 2
+#'
+#' @return Side-by-side display of differences between two files 
+#' @export
+#'
+
 rw.tlf.diff = 
   function(path.f1, path.f2, before = path.f1, after = path.f2) {
     
@@ -17,7 +21,7 @@ rw.tlf.diff =
     # Check1: if the type is pdf or rtf.  
     Check1 =
       lapply(list(path.f1, path.f2), 
-             FUN = function(x) str_ends(x, pattern = 'rtf|pdf')) %>% 
+             FUN = function(x) stringr::str_ends(x, pattern = 'rtf|pdf')) %>% 
       unlist() 
     
     Check1.pos =
@@ -34,14 +38,23 @@ rw.tlf.diff =
     
     # File input
     input = function(x) {
-      if (str_ends(x, pattern = 'pdf')) {
-        pdf_text(x) %>% paste(collapse = '\n')
+      if (stringr::str_ends(x, pattern = 'pdf')) {
+        out =
+          pdftools::pdf_text(x) %>% 
+          paste(collapse = '\n')
       } else {
-        docx2pdf(x)
+        doconv::docx2pdf(x)
         
-        str_replace(x, pattern = '.rtf', replacement = '.pdf') %>%
-          pdf_text %>% paste(collapse = '\n')
+        x.pdf = 
+          stringr::str_replace(x, pattern = '.rtf', replacement = '.pdf')
+        
+        out = 
+          pdftools::pdf_text(x.pdf) %>% 
+          paste(collapse = '\n')
+        
+        file.remove(x.pdf)
       }
+      return(out)
     }
     
     tlf.in =
@@ -54,18 +67,7 @@ rw.tlf.diff =
     
     htmlwidgets::createWidget(name = "diffr", x, width = NULL, 
                               height = NULL, package = "diffr")
-    
-    # Here
-    to remove the converted PDF file
-    
-    
-    
-    
-    
   }
 
-rw.tlf.diff(path.f1, path.f2)
-
-
 # TEST RUN ----
-
+# rw.tlf.diff(path.f1, path.f2)
