@@ -205,6 +205,9 @@ rw.freq1 =
     t.all[, ORDERL2 := data.table::nafill(ORDERL2, type = 'locf'),
           by = l2]
     
+    t.all[, ORDERL2 := data.table::nafill(ORDERL2, type = 'nocb'),
+          by = l2]
+    
     # L1 order
     if (sort.l1 %in% 'freq') {
       if (l1.desc) {

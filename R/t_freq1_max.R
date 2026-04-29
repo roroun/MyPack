@@ -255,6 +255,11 @@ rw.freq1.max =
            by = l2,
            env = list(l2 = l2)]
     
+    t.all1[order(ORDERL2),
+           ORDERL2 := data.table::nafill(ORDERL2, type = 'nocb'),
+           by = l2,
+           env = list(l2 = l2)]
+    
     # L1 order
     if (sort.l1 %in% 'freq') {
       if (l1.desc) {
