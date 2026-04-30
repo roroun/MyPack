@@ -1,18 +1,19 @@
 # TEST DB ----
 # dbin =
 #   data.table(
-#     TRT = sample(c('TEST1', 'TEST2', 'CONTROL'), size = 100, replace = T),
+#     TRTA = sample(c('TEST1', 'TEST2', 'CONTROL'), size = 100, replace = T),
 #     VAR1 = sample(c('L1_1', 'L1_2', 'L1_3'), size = 100, replace = T),
 #     VAR2 = sample(c('L2_1', 'L2_2'), size = 100, replace = T),
 #     VAR3 = sample(c('L3_1', 'L3_2'), size = 100, replace = T)
 #   )
 # 
-# db = copy(dbin) %>% filter(TRT %in% c('TEST1', 'CONTROL'))
-# trt = 'TRT'
+# db = copy(dbin) %>% filter(TRTA %in% c('TEST1', 'CONTROL'))
+# trt = 'TRTA'
 # l1 = 'VAR1'
 # l2 = 'VAR2'
 # N = 'n'
 # N = c('CONTROL' = 100, 'TEST1' = 100, 'TEST2' = 100)
+# N = dbin[, table(TRTA)]
 # stats = c('n')
 # ci = F
 # ci.method = 'clopper-pearson'
@@ -95,6 +96,8 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   # Add PCT and CL
   if(any(is.table(N), (is.vector(N) & ! is.null(names(N))))){
     n.trt = data.table::as.data.table(N, keep.rownames = 'TRT')
+    
+    names(n.trt)[1] = 'TRT'
     
     db.n =
       rbind(

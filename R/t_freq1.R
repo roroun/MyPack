@@ -2,21 +2,21 @@
 # dbin =
 #   data.table(
 #     USUBJID = paste0('P',
-#                      str_pad(1:20, width = 2, side = 'left', pad = '0')) %>% 
+#                      str_pad(1:20, width = 2, side = 'left', pad = '0')) %>%
 #       rep(each = 5),
-#     TRT = sample(c('TEST', 'CONTROL'), size = 20, replace = T) %>% 
-#       rep(each = 5) %>% 
+#     TRTA = sample(c('TEST', 'CONTROL'), size = 20, replace = T) %>%
+#       rep(each = 5) %>%
 #       factor(levels = c('TEST', 'CONTROL')),
 #     SOC = sample(c('SOC-1', 'SOC-1', 'SOC-1', 'SOC-2', 'SOC-3'), size = 100, replace = T)
 #   )
 # 
-# dbin[, PT := sample(paste0('PT-', substr(SOC, 5, 5), rep(1:9, time = 9:1)), 
+# dbin[, PT := sample(paste0('PT-', substr(SOC, 5, 5), rep(1:9, time = 9:1)),
 #                     size = .N, replace = T),
 #      by = .(SOC)]
 # 
-# db = copy(dbin) %>% filter(TRT %in% 'TEST')
+# db = copy(dbin) %>% filter(TRTA %in% 'TEST')
 # subj = 'USUBJID'
-# trt = 'TRT'
+# trt = 'TRTA'
 # l1 = 'PT'
 # l2 = 'SOC'
 # sort.l1 = 'freq'
@@ -25,6 +25,7 @@
 # l2.desc = TRUE
 # sort.ref = 'OVERALL'
 # N = c('TEST' = 100, 'CONTROL' = 100)
+# N = dbin[, table(TRTA)]
 # stats = 'n'
 # diffci.method = 'scorecc'
 # diff.ref = 'CONTROL'
@@ -243,6 +244,8 @@ rw.freq1 =
       db.pct[, STATS := 'N_PCT']
       
       n.trt = data.table::as.data.table(N, keep.rownames = 'TRT')
+      
+      names(n.trt)[1] = 'TRT'
       
       db.n =
         rbind(

@@ -25,6 +25,7 @@
 # l2 = 'SOC'
 # max = 'SEV'
 # N = c('TEST1' = 100, 'TEST2' = 100, 'CONTROL' = 100)
+# N = dbin[, table(TRT)]
 # stats = 'n'
 # sort.l1 = 'freq'
 # sort.l2 = 'freq'
@@ -301,6 +302,8 @@ rw.freq1.max =
       db.pct[, STATS := 'N_PCT']
       
       n.trt = data.table::as.data.table(N, keep.rownames = 'TRT')
+      
+      names(n.trt)[1] = 'TRT'
       
       db.n =
         rbind(
