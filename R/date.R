@@ -52,26 +52,26 @@ rw.date = function(x, format = 'ymd', m, d, date.ref) {
   if (missing(date.ref)) date.ref = lubridate::ymd('1970-01-01')
   
   # Impute the partial dates #
-  if (! is.na(x.date0)) {
+  if (! is.na(x.date0) & x.date0 == x.date1) {
     # Case: complete date #
     
     out.date = x.date0
     
-  } else if (! is.na(x.date1)) {
+  } else if (! is.na(x.date1) & ! is.na(x.date2)) {
     # Case: day is missing #
     
     last.date = 
-      lubridate::ceiling_date(x.date1, unit = 'month') %>% 
+      lubridate::ceiling_date(x.date2, unit = 'month') %>% 
       lubridate::rollback()
     
-    lubridate::day(x.date1) = d
+    lubridate::day(x.date2) = d
     
     # Use the ref date if known parts are the same as those of the ref date 
     if (lubridate::year(last.date) == lubridate::year(date.ref) & 
         lubridate::month(last.date) == lubridate::month(date.ref)) {
       out.date = date.ref
     } else 
-      out.date = min(x.date1, last.date)  # use the last day in case the imputed date > last date
+      out.date = min(x.date2, last.date)  # use the last day in case the imputed date > last date
     
   } else if (! is.na(x.date2)) {
     # Case: month and day are missing #

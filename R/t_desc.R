@@ -16,8 +16,8 @@
 # TEST DB ----
 # dbin =
 #   data.table(
-#     paste0('P',
-#            str_pad(1:100, width = 3, side = 'left', pad = '0')),
+#     USUBJID = paste0('P',
+#                      str_pad(1:100, width = 3, side = 'left', pad = '0')),
 #     TRT = sample(c('TEST', 'CONTROL'), size = 100, replace = T),
 #     AVAL = runif(100, min = 0, max = 100) %>% round(digits = 1),
 #     L1 = sample(c('V1', 'V2'), size = 100, replace = T),
