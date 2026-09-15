@@ -39,8 +39,10 @@
 #' @param var.info The variables to be displayed along with x0 and x1 for information
 #'
 #' @return A dataset showing records with non-identical values 
+#' @export
+ 
 
-rw.check.drv = 
+rw.check.drv =
   function(x0, x1, db, var.info){
     db = data.table::as.data.table(db)
     

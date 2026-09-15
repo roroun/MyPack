@@ -16,9 +16,10 @@ Imports:
     stringr,
     DescTools,
     lubridate,
+    Hmisc,
     pdftools,
     grid,
     gridExtra,
     doconv,
     htmlwidgets
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.1.0
