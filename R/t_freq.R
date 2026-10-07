@@ -90,7 +90,7 @@ rw.freq = function(db, trt, l1, l2, l3, N = 'n', stats = 'n_pct',
   out1 =
     db[, table(l3, l2, l1, trt),
        env = list(l3 = l3, l2 = l2, l1 = l1, trt = trt)] %>%
-    stats::addmargins(margin = c(3, 4), FUN = list(`_n` = sum, OVERALL = sum)) %>%
+    stats::addmargins(margin = c(3, 4), FUN = list(`_n` = sum, OVERALL = sum), quiet = T) %>%
     data.table::as.data.table()
   
   # Add PCT and CL

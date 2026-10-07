@@ -144,7 +144,7 @@ rw.freq1.max =
     freq.lvl = function(x) {
       x[, table(l2, l1, max, trt),
         env = list(l2 = l2, l1 = l1, max = max, trt = trt)] %>% 
-        addmargins(margin = 3, FUN = list(`_ANY` = sum)) %>% 
+        addmargins(margin = 3, FUN = list(`_ANY` = sum), quiet = T) %>% 
         data.table::as.data.table() %>% 
         reshape(direction = 'wide', idvar = c(l2, l1, max), timevar = trt,
                 v.names = 'N',
