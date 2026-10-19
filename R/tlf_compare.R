@@ -114,6 +114,7 @@ rw.tlf.compare =
                                              'Program Name:.*',    # remove the program name cell
                                              'PROGRAM NAME:.*',
                                              '\\d{2}[:alpha:]{3}\\d{4}:\\d{2}:\\d{2}:\\d{2}',    # remove the program running time cell
+                                             '\\d{2}[:alpha:]{3}\\d{4}\\s\\d{2}:\\d{2}',
                                              sep = '|'),
                                        '') 
             
