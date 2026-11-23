@@ -14,21 +14,21 @@
 #' @export
 
 # TEST DB ----
-# dbin =
-#   data.table(
-#     USUBJID = paste0('P',
-#                      str_pad(1:100, width = 3, side = 'left', pad = '0')),
-#     TRT = sample(c('TEST', 'CONTROL'), size = 100, replace = T),
-#     AVAL = runif(100, min = 0, max = 100) %>% round(digits = 1),
-#     L1 = sample(c('V1', 'V2'), size = 100, replace = T),
-#     L2 = sample(c('PARAM1', 'PARAM2'), size = 100, replace = T)
-#   )
-# 
-# db = dbin[TRT %in% 'TEST']
-# trt = 'TRT'
-# aval = 'AVAL'
-# l1 = 'L1'
-# l2 = 'L2'
+dbin =
+  data.table(
+    USUBJID = paste0('P',
+                     str_pad(1:100, width = 3, side = 'left', pad = '0')),
+    TRT = sample(c('TEST', 'CONTROL'), size = 100, replace = T),
+    AVAL = runif(100, min = 0, max = 100) %>% round(digits = 1),
+    L1 = sample(c('V1', 'V2'), size = 100, replace = T),
+    L2 = sample(c('PARAM1', 'PARAM2'), size = 100, replace = T)
+  )
+
+db = dbin[TRT %in% 'TEST']
+trt = 'TRT'
+aval = 'AVAL'
+l1 = 'L1'
+l2 = 'L2'
 
 # FUNC ----
 rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 'long') {
@@ -83,6 +83,7 @@ rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 
            DescTools::Format(digits = dp + 1) %>% as.character(),
          SD = sd(aval) %>% 
            DescTools::Format(digits = dp + 2) %>% as.character(),
+         SE = (sd(aval) / sqrt(.N)) %>% DescTools::Format(digits = 2) %>% as.character(),
          MIN = min(aval) %>% 
            DescTools::Format(digits = dp) %>% as.character(),
          MAX = max(aval) %>% 
@@ -108,6 +109,7 @@ rw.desc = function(db, trt, aval, l1, l2, stats = 'common', dp = 0, direction = 
     l1 = factor(l1, levels = lvl.l1),
     l2 = factor(l2, levels = lvl.l2),
     MEAN_SD = paste0(MEAN, ' (', SD, ')'),
+    # HERE CI = ,
     RANGE = paste(MIN, MAX, sep = ', ')
   ),
   env = list(trt = trt, l1 = l1, l2 = l2)]
