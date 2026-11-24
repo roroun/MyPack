@@ -4,7 +4,17 @@
 \alias{rw.desc}
 \title{Descriptive Summary for Numeric Variables}
 \usage{
-rw.desc(db, trt, aval, l1, l2, stats = "common", dp = 0, direction = "long")
+rw.desc(
+  db,
+  trt,
+  aval,
+  l1,
+  l2,
+  stats = "common",
+  dp = 0,
+  alpha = 0.05,
+  direction = "long"
+)
 }
 \arguments{
 \item{db}{A dataset, e.g., ADSL}
@@ -18,9 +28,12 @@ rw.desc(db, trt, aval, l1, l2, stats = "common", dp = 0, direction = "long")
 \item{l2}{Level 2, e.g., 'PARAMCD'}
 
 \item{stats}{Character. Which stats to produce. Either “common” (default), or a selection of : 
-'n', 'mean', 'sd', 'mean_sd', 'med', 'min', 'max', 'range', 'q1', 'q3', 'cv'.}
+'n', 'mean', 'sd', 'mean_sd', 'med', 'q1', 'q3', 'iqr', 'med_iqr', 'min', 'max', 'range', 'cv', 'ci'. 
+CI is calculated based on t distribution.}
 
 \item{dp}{Decimal place to be displayed}
+
+\item{alpha}{Alpha value for CI calculation}
 
 \item{direction}{Display direction: long or wide}
 }
